@@ -5,11 +5,12 @@ import queue
 import time
 from typing import Optional, Callable
 import asyncio
+from language_utils import get_language_manager, get_text
 
 class HoveringUI:
     """A transparent hovering UI that displays terminal output above the browser"""
     
-    def __init__(self, width: int = 400, height: int = 300, opacity: float = 0.85):
+    def __init__(self, width: int = 400, height: int = 300, opacity: float = 0.85, language: Optional[str] = None):
         self.width = width
         self.height = height
         self.opacity = opacity
@@ -18,6 +19,11 @@ class HoveringUI:
         self.message_queue = queue.Queue()
         self.is_running = False
         self.ui_thread: Optional[threading.Thread] = None
+        
+        # Language support
+        self.language_manager = get_language_manager()
+        if language:
+            self.language_manager.set_language(language)
         
     def start(self):
         """Start the hovering UI in a separate thread"""
@@ -58,7 +64,7 @@ class HoveringUI:
     
     def _setup_window(self):
         """Configure the main window"""
-        self.root.title("Browser4All Assistant")
+        self.root.title(get_text("ui.title"))
         self.root.geometry(f"{self.width}x{self.height}")
         
         # Make window transparent and always on top
@@ -110,7 +116,7 @@ class HoveringUI:
         # Title
         title_label = tk.Label(
             header_frame, 
-            text="🤖 Browser4All Assistant", 
+            text=get_text("ui.title"), 
             bg='#2d2d2d', 
             fg='white',
             font=('Segoe UI', 9, 'bold')
@@ -167,6 +173,10 @@ class HoveringUI:
         self.text_widget.tag_configure('question', foreground='#60a5fa')
         self.text_widget.tag_configure('response', foreground='#a78bfa')
         self.text_widget.tag_configure('timestamp', foreground='#6b7280', font=('Consolas', 8))
+        # New tags for agent activity
+        self.text_widget.tag_configure('goal', foreground='#fbbf24', font=('Consolas', 9, 'bold'))  # Yellow bold for goals
+        self.text_widget.tag_configure('action', foreground='#06d6a0', font=('Consolas', 9, 'bold'))  # Teal bold for actions
+        self.text_widget.tag_configure('step', foreground='#8b5cf6', font=('Consolas', 9, 'bold'))  # Purple bold for steps
         
         self.is_minimized = False
         self.normal_height = self.height
@@ -207,8 +217,21 @@ class HoveringUI:
         # Insert timestamp
         self.text_widget.insert('end', f"[{time_str}] ", 'timestamp')
         
-        # Insert message with appropriate styling
-        self.text_widget.insert('end', f"{message}\n", msg_type)
+        # Special formatting for agent activity
+        if msg_type in ['goal', 'action', 'step']:
+            # Add some visual separation for important agent messages
+            if msg_type == 'step':
+                self.text_widget.insert('end', "═" * 50 + "\n", 'timestamp')
+                self.text_widget.insert('end', f"[{time_str}] ", 'timestamp')
+            
+            # Insert message with appropriate styling
+            self.text_widget.insert('end', f"{message}\n", msg_type)
+            
+            if msg_type == 'step':
+                self.text_widget.insert('end', "═" * 50 + "\n", 'timestamp')
+        else:
+            # Insert message with appropriate styling
+            self.text_widget.insert('end', f"{message}\n", msg_type)
         
         # Auto-scroll to bottom
         self.text_widget.see('end')
@@ -241,7 +264,14 @@ class UIMessageHandler:
         """Determine message type based on content"""
         message_lower = message.lower()
         
-        if any(emoji in message for emoji in ['🤔', '❓']):
+        # Check for agent activity patterns first (more specific)
+        if '🎯 next goal:' in message_lower:
+            return 'goal'
+        elif '🦾 [action' in message_lower and ']' in message:
+            return 'action'
+        elif '📍 step' in message_lower:
+            return 'step'
+        elif any(emoji in message for emoji in ['🤔', '❓']):
             return 'question'
         elif any(emoji in message for emoji in ['✅', '🎯', '📝']):
             return 'success'
@@ -258,12 +288,12 @@ class UIMessageHandler:
 _ui_instance: Optional[HoveringUI] = None
 _message_handler: Optional[UIMessageHandler] = None
 
-def initialize_ui(width: int = 450, height: int = 350, opacity: float = 0.85):
+def initialize_ui(width: int = 450, height: int = 350, opacity: float = 0.85, language: Optional[str] = None):
     """Initialize the hovering UI"""
     global _ui_instance, _message_handler
     
     if _ui_instance is None:
-        _ui_instance = HoveringUI(width, height, opacity)
+        _ui_instance = HoveringUI(width, height, opacity, language)
         _message_handler = UIMessageHandler(_ui_instance)
         
         # Replace the global print function
@@ -274,7 +304,7 @@ def initialize_ui(width: int = 450, height: int = 350, opacity: float = 0.85):
         _ui_instance.start()
         
         # Add welcome message
-        _ui_instance.add_message("🚀 Browser4All Assistant Started", "success")
+        _ui_instance.add_message(get_text("ui.starting"), "success")
     
     return _ui_instance
 
@@ -283,7 +313,7 @@ def shutdown_ui():
     global _ui_instance, _message_handler
     
     if _ui_instance:
-        _ui_instance.add_message("👋 Shutting down...", "info")
+        _ui_instance.add_message(get_text("ui.shutting_down"), "info")
         time.sleep(0.5)
         _ui_instance.stop()
         _ui_instance = None

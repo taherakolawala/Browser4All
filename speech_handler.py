@@ -10,14 +10,24 @@ import speech_recognition as sr
 import threading
 import time
 import wave
+from language_utils import get_language_manager, get_text, get_speech_config
 
 class ElevenLabsSpeech:
     """Natural-sounding speech using ElevenLabs API"""
     
-    def __init__(self, api_key: Optional[str] = None, voice_id: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, voice_id: Optional[str] = None, language: Optional[str] = None):
         self.api_key = api_key or os.getenv("ELEVEN_LABS_API_KEY")
-        # Default to Rachel (pleasant, clear female voice) - you can change this
-        self.voice_id = voice_id or "EXAVITQu4vr4xnSDxMaL" 
+        
+        # Get language configuration
+        self.language_manager = get_language_manager()
+        if language:
+            self.language_manager.set_language(language)
+        
+        # Set voice based on current language or provided voice_id
+        speech_config = self.language_manager.get_speech_config()
+        self.voice_id = voice_id or speech_config['elevenlabs_voice_id']
+        self.current_language = speech_config['language_code']
+        
         self.base_url = "https://api.elevenlabs.io/v1"
         
         if not self.api_key:
@@ -151,11 +161,19 @@ class ElevenLabsSpeech:
 class SpeechRecognizer:
     """Speech recognition using Google's Web Speech API"""
     
-    def __init__(self):
+    def __init__(self, language: Optional[str] = None):
         self.recognizer = sr.Recognizer()
         self.microphone = None
         self.is_listening = False
         self.logger = logging.getLogger(__name__)
+        
+        # Get language configuration
+        self.language_manager = get_language_manager()
+        if language:
+            self.language_manager.set_language(language)
+        
+        speech_config = self.language_manager.get_speech_config()
+        self.language_code = speech_config['speech_recognition_language']
         
         # Initialize microphone
         self._init_microphone()
@@ -172,9 +190,10 @@ class SpeechRecognizer:
             
             # Adjust for ambient noise
             with self.microphone as source:
-                print("🎤 Calibrating microphone for ambient noise (this may take a moment)...")
+                print(get_text("ui.calibrating_mic"))
                 self.recognizer.adjust_for_ambient_noise(source, duration=1)
                 
+            print(get_text("ui.mic_initialized"))
             self.logger.info("Microphone initialized successfully")
             
         except Exception as e:
@@ -227,9 +246,9 @@ class SpeechRecognizer:
             # Recognize speech using Google's service with fresh request each time
             try:
                 # Force fresh recognition by ensuring no cached results
-                text = self.recognizer.recognize_google(audio, show_all=False)
+                text = self.recognizer.recognize_google(audio, language=self.language_code, show_all=False)
                 if text and text.strip():
-                    print(f"✅ Recognized: '{text}'")
+                    print(get_text("voice.recognized", text=text))
                     return text.strip()
                 else:
                     print("❌ Empty recognition result. Please try again.")
