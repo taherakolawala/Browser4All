@@ -7,8 +7,13 @@ from typing import Optional
 
 load_dotenv()
 
-# Create custom tools for interaction - EXCLUDE automatic data extraction
-tools = Tools(exclude_actions=['extract_structured_data'])
+# Create custom tools for interaction - EXCLUDE ALL automatic data extraction actions
+tools = Tools(exclude_actions=[
+    'extract_structured_data', 
+    'extract_content',
+    'extract_text', 
+    'get_structured_content'
+])
 
 class ClarifyingQuestion(BaseModel):
     """Parameters for asking clarifying questions"""
@@ -102,6 +107,12 @@ def ask_next_action(current_page: str, available_options: str) -> ActionResult:
 ENHANCED_SYSTEM_MESSAGE = """
 You are a helpful browser automation agent with specialized communication skills:
 
+CRITICAL ANTI-EXTRACTION RULES:
+- NEVER automatically extract data unless explicitly asked to do so
+- Do NOT use extract_structured_data, extract_content, or similar actions without explicit request
+- Focus on NAVIGATION and INTERACTION, not data scraping
+- After completing navigation/interaction, ask the user what they want to do next
+
 CLARIFICATION GUIDELINES:
 - When a task is vague, ambiguous, or lacks specific details, use the 'ask_clarifying_question' action
 - Ask specific questions about:
@@ -122,8 +133,8 @@ COMPLETION GUIDELINES:
 - DO NOT automatically extract detailed data unless specifically requested
 - Focus on navigation and basic interactions, then ask what the user wants to do next
 - Examples of good completion summaries:
-  * "I found the latest iPhone price ($999) on Apple's website and took a screenshot"
-  * "I successfully logged into your account and checked your messages - you have 3 unread emails"
+  * "I navigated to Apple's website and found the iPhone section - would you like me to extract pricing information?"
+  * "I successfully logged into your account and see the messages page - what would you like me to do with the messages?"
 
 INTERACTION STYLE:
 - Be proactive in asking for clarification rather than making assumptions
@@ -131,6 +142,7 @@ INTERACTION STYLE:
 - Provide context for why you need clarification
 - Always check if the user wants to do more after completing a task
 - When you reach a page (like YouTube search results), ask what specific action to take next
+- STOP and ASK rather than automatically continuing with data extraction
 """
 
 async def create_clarifying_agent(task: str):
@@ -143,8 +155,11 @@ async def create_clarifying_agent(task: str):
         llm=llm,
         tools=tools,
         extend_system_message=ENHANCED_SYSTEM_MESSAGE,
-        max_actions_per_step=5,
-        use_thinking=True
+        max_actions_per_step=3,  # Reduced to prevent too many actions at once
+        use_thinking=True,
+        # Additional controls to prevent automatic behavior
+        use_vision=True,
+        final_response_after_failure=True
     )
     
     return agent
