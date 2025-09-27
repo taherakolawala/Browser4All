@@ -5,8 +5,16 @@ from browser_use.agent.views import ActionResult
 from pydantic import BaseModel, Field
 from typing import Optional
 from speech_handler import speak_text, speak_text_sync, configure_speech, get_user_input_with_voice
+from hovering_ui import initialize_ui, shutdown_ui, add_ui_message
+import atexit
 
 load_dotenv()
+
+# Initialize the hovering UI
+initialize_ui(width=1920, height=1080, opacity=0.88)
+
+# Register cleanup function
+atexit.register(shutdown_ui)
 
 # Configure speech settings
 configure_speech(
@@ -275,6 +283,9 @@ async def run_interactive_session():
         print("\n\n⏹️ Session interrupted by user.")
     except Exception as e:
         print(f"\n❌ An error occurred: {e}")
+    finally:
+        # Ensure UI cleanup
+        shutdown_ui()
 
 # Example usage functions
 async def example_vague_task():
@@ -288,8 +299,15 @@ async def example_specific_task():
     await agent.run()
 
 if __name__ == "__main__":
-    # Run interactive session
-    asyncio.run(run_interactive_session())
+    try:
+        # Run interactive session
+        asyncio.run(run_interactive_session())
+    except KeyboardInterrupt:
+        print("\n\nShutting down...")
+        shutdown_ui()
+    except Exception as e:
+        print(f"Error: {e}")
+        shutdown_ui()
     
     # Or run specific examples:
     # asyncio.run(example_vague_task())
