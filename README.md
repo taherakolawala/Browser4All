@@ -46,8 +46,8 @@ source .venv/bin/activate
 # Install browser-use
 uv pip install browser-use
 
-# Install speech dependencies
-uv pip install elevenlabs pygame aiohttp python-dotenv pydantic
+# Install speech dependencies (includes voice input)
+uv pip install elevenlabs pygame aiohttp python-dotenv pydantic SpeechRecognition pyaudio
 
 # Download Chromium browser
 uvx playwright install chromium --with-deps --no-shell
@@ -93,7 +93,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install dependencies
-pip install browser-use elevenlabs pygame aiohttp python-dotenv pydantic
+pip install browser-use elevenlabs pygame aiohttp python-dotenv pydantic SpeechRecognition pyaudio
 
 # Download Chromium
 playwright install chromium
@@ -117,21 +117,41 @@ self.voice_id = "pNInz6obpgDQGcFmaJgB"  # Adam - Friendly male, casual
 In `main.py`, you can configure:
 ```python
 configure_speech(
-    enabled=True,           # Enable/disable speech
-    speak_questions=True,   # Speak clarifying questions
-    speak_confirmations=True, # Speak task completions
-    speak_errors=False      # Don't speak error messages
+    enabled=True,              # Enable/disable text-to-speech
+    speak_questions=True,      # Speak clarifying questions
+    speak_confirmations=True,  # Speak task completions
+    speak_errors=False,        # Don't speak error messages
+    listen_for_responses=True, # Enable voice input (NEW!)
+    offer_voice_input=True,    # Show voice input options
+    recognition_timeout=10,    # Voice input timeout (seconds)
+    debug_audio=False          # Play back recorded audio for debugging (NEW!)
 )
 ```
 
+### 🔧 Debug Audio Feature
+Set `debug_audio=True` to hear what your microphone recorded:
+- Records your voice when you speak
+- Saves temporary audio file
+- Plays it back immediately so you can verify audio quality
+- Useful for troubleshooting microphone issues
+- Audio files are automatically cleaned up
+
 ## 🎯 How It Works
 
-Browser4All asks clarifying questions instead of making assumptions:
+Browser4All asks clarifying questions instead of making assumptions, and now supports **voice responses**:
 
-1. **You type**: "reddit"
+1. **You type or speak**: "reddit"
 2. **Agent asks**: 🔊 "What would you like me to do on Reddit?"
-3. **You respond**: "search for python tutorials"
+3. **You can respond by**:
+   - 🎤 **Speaking**: Press Enter and speak your response
+   - ⌨️ **Typing**: Type your response directly
 4. **Agent acts**: Navigates, searches, then asks what to do next
+
+### 🎤 Voice Input Features
+- **Automatic microphone setup** with ambient noise calibration
+- **Fallback to typing** if voice recognition fails
+- **Google Speech Recognition** for accurate text conversion
+- **Flexible input**: Choose voice or text for each response
 
 ## 📋 Example Usage
 
@@ -171,6 +191,17 @@ python main.py
 - The agent uses synchronous speech to avoid asyncio conflicts
 - If errors persist, set `enabled=False` in `configure_speech()`
 
+**Voice Input Issues:**
+- **No microphone detected**: Check microphone connection and permissions
+- **"Couldn't understand"**: Speak clearly, reduce background noise
+- **Voice timeout**: Increase `recognition_timeout` in speech configuration
+- **PyAudio installation errors**: 
+  - Windows: Try `pip install pipwin; pipwin install pyaudio`
+  - Or download from: https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio
+- **Disable voice input only**: Set `listen_for_responses=False` in `configure_speech()`
+- **Debug audio playback**: Enable `debug_audio=True` to hear recorded audio
+- **No audio playback during debug**: Check volume levels and pygame installation
+
 ### Cost Management
 
 **ElevenLabs Usage:**
@@ -192,7 +223,7 @@ powershell -ExecutionPolicy ByPass -Command "irm https://astral.sh/uv/install.ps
 # Restart terminal
 uv venv --python 3.12
 .\.venv\Scripts\Activate.ps1
-uv pip install browser-use elevenlabs pygame aiohttp python-dotenv pydantic
+uv pip install browser-use elevenlabs pygame aiohttp python-dotenv pydantic SpeechRecognition pyaudio
 uvx playwright install chromium --with-deps --no-shell
 # Add API keys to .env file
 python main.py

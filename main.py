@@ -1,10 +1,10 @@
 import asyncio
 from dotenv import load_dotenv
-from browser_use import Agent, Tools, ChatOpenAI
+from browser_use import Agent, Tools, ChatOpenAI, Browser
 from browser_use.agent.views import ActionResult
 from pydantic import BaseModel, Field
 from typing import Optional
-from speech_handler import speak_text, speak_text_sync, configure_speech
+from speech_handler import speak_text, speak_text_sync, configure_speech, get_user_input_with_voice
 
 load_dotenv()
 
@@ -13,7 +13,12 @@ configure_speech(
     enabled=True,
     speak_questions=True,
     speak_confirmations=True,
-    speak_errors=False
+    speak_errors=False,
+    listen_for_responses=True,  # Enable voice input
+    offer_voice_input=True,    # Show voice input options
+    voice_input_default=True,  # Make voice input the default mode
+    recognition_timeout=10,    # 10 second timeout for voice input
+    debug_audio=True          # Enable audio debugging (hear what was recorded)
 )
 
 # Create custom tools for interaction - EXCLUDE ALL automatic data extraction actions
@@ -49,13 +54,19 @@ def ask_clarifying_question(params: ClarifyingQuestion) -> ActionResult:
     print("\n🔊 Speaking question...")
     speak_text_sync(question_speech)
     
-    user_response = input("\nYour response: ").strip()
+    user_response = get_user_input_with_voice(
+        prompt="\nYour response: ",
+        voice_prompt=f"Please respond to: {params.question}"
+    )
     
     if not user_response:
         return ActionResult(
             extracted_content="User provided no response to clarifying question",
             error="No clarification provided"
         )
+    
+    # Don't speak back the user's response - they just said it
+    print(f"📝 Received: {user_response}")
     
     return ActionResult(
         extracted_content=f"User clarification: {user_response}",
@@ -85,19 +96,25 @@ def ask_for_follow_up(params: FollowUpCheck) -> ActionResult:
     print("\n🔊 Speaking completion message...")
     speak_text_sync(completion_speech)
     
-    user_response = input("Your response (or 'no' to finish): ").strip()
+    user_response = get_user_input_with_voice(
+        prompt="Your response (or 'no' to finish): ",
+        voice_prompt="Is there anything else you'd like me to help you with? Say 'no' if you're done."
+    )
     
     if user_response.lower() in ['no', 'n', 'nothing', 'done', 'finished', 'exit', 'quit']:
+        # Don't speak back their "no" response
+        print(f"📝 Received: {user_response}")
         return ActionResult(
             extracted_content="User indicated no more tasks needed",
             is_done=True,
             success=True
         )
     elif user_response:
+        # Don't speak back their new task request - they just said it
+        print(f"📝 New task received: {user_response}")
         return ActionResult(
             extracted_content=f"New task requested: {user_response}",
-            long_term_memory=f"Follow-up task: {user_response}"
-        )
+            )
     else:
         return ActionResult(
             extracted_content="User provided no response to follow-up question",
@@ -119,13 +136,19 @@ def ask_next_action(current_page: str, available_options: str) -> ActionResult:
     print("\n🔊 Speaking status update...")
     speak_text_sync(status_speech)
     
-    user_response = input("Your response: ").strip()
+    user_response = get_user_input_with_voice(
+        prompt="Your response: ",
+        voice_prompt="What would you like me to do next?"
+    )
     
     if not user_response:
         return ActionResult(
             extracted_content="User provided no response for next action",
             error="No next action specified"
         )
+    
+    # Don't speak back the user's response - they just said it
+    print(f"📝 Next action: {user_response}")
     
     return ActionResult(
         extracted_content=f"User wants next action: {user_response}",
@@ -179,8 +202,14 @@ async def create_clarifying_agent(task: str):
     
     llm = ChatOpenAI(model="gpt-4.1-mini")
     
+    browser = Browser(
+        window_size={'width': 960, 'height': 540},
+        headless=False
+    )
+
     agent = Agent(
         task=task,
+        browser=browser,
         llm=llm,
         tools=tools,
         extend_system_message=ENHANCED_SYSTEM_MESSAGE,
@@ -203,11 +232,17 @@ async def run_interactive_session():
     await speak_text(greeting)
     
     # Get initial task from user
-    initial_task = input("What would you like me to help you with? ").strip()
+    initial_task = get_user_input_with_voice(
+        prompt="What would you like me to help you with? ",
+        voice_prompt="Please tell me what you'd like me to help you with."
+    )
     
     if not initial_task:
         print("Please provide a task to get started.")
         return
+    
+    # Don't speak back the user's task - they just said it
+    print(f"📝 Task received: {initial_task}")
     
     # Create and run agent
     agent = await create_clarifying_agent(initial_task)
