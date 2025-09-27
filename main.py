@@ -326,7 +326,7 @@ async def create_clarifying_agent(task: str, language: str = None):
     llm = ChatOpenAI(model="gpt-4.1-mini")
     
     browser = Browser(
-        window_size={'width': 960, 'height': 540},
+        window_size={'width': 1920, 'height': 1080},
         headless=False
     )
 
