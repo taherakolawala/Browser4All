@@ -1,0 +1,10 @@
+# Speech dependencies for natural-sounding voice
+elevenlabs>=0.2.24
+pygame>=2.5.2
+aiohttp>=3.8.0
+
+# Existing dependencies (if not already installed)
+browser-use
+openai
+python-dotenv
+pydantic

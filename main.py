@@ -4,8 +4,17 @@ from browser_use import Agent, Tools, ChatOpenAI
 from browser_use.agent.views import ActionResult
 from pydantic import BaseModel, Field
 from typing import Optional
+from speech_handler import speak_text, speak_text_sync, configure_speech
 
 load_dotenv()
+
+# Configure speech settings
+configure_speech(
+    enabled=True,
+    speak_questions=True,
+    speak_confirmations=True,
+    speak_errors=False
+)
 
 # Create custom tools for interaction - EXCLUDE ALL automatic data extraction actions
 tools = Tools(exclude_actions=[
@@ -35,6 +44,11 @@ def ask_clarifying_question(params: ClarifyingQuestion) -> ActionResult:
     print(f"Context: {params.context}")
     print(f"Question: {params.question}")
     
+    # Speak the question naturally (synchronous to avoid event loop issues)
+    question_speech = f"I need some clarification. {params.context}. {params.question}"
+    print("\n🔊 Speaking question...")
+    speak_text_sync(question_speech)
+    
     user_response = input("\nYour response: ").strip()
     
     if not user_response:
@@ -61,6 +75,16 @@ def ask_for_follow_up(params: FollowUpCheck) -> ActionResult:
         print(f"Suggestions: {params.suggestions}")
     
     print(f"\n❓ Is there anything else you'd like me to help you with?")
+    
+    # Speak the completion and question
+    completion_speech = f"Task completed successfully! {params.completion_summary}. "
+    if params.suggestions:
+        completion_speech += f"Here are some suggestions: {params.suggestions}. "
+    completion_speech += "Is there anything else you'd like me to help you with?"
+    
+    print("\n🔊 Speaking completion message...")
+    speak_text_sync(completion_speech)
+    
     user_response = input("Your response (or 'no' to finish): ").strip()
     
     if user_response.lower() in ['no', 'n', 'nothing', 'done', 'finished', 'exit', 'quit']:
@@ -89,6 +113,11 @@ def ask_next_action(current_page: str, available_options: str) -> ActionResult:
     print(f"\n📍 I'm currently on: {current_page}")
     print(f"Available options: {available_options}")
     print(f"\n❓ What would you like me to do next?")
+    
+    # Speak the current status and question
+    status_speech = f"I'm currently on {current_page}. Available options include {available_options}. What would you like me to do next?"
+    print("\n🔊 Speaking status update...")
+    speak_text_sync(status_speech)
     
     user_response = input("Your response: ").strip()
     
@@ -166,8 +195,12 @@ async def create_clarifying_agent(task: str):
 
 async def run_interactive_session():
     """Run an interactive session with the clarifying agent"""
-    print("🚀 Browser Agent with Clarifying Questions")
+    print("🚀 Browser Agent with Clarifying Questions & Speech")
     print("=" * 50)
+    
+    # Speak greeting
+    greeting = "Hello! I'm your browser automation agent. What would you like me to help you with?"
+    await speak_text(greeting)
     
     # Get initial task from user
     initial_task = input("What would you like me to help you with? ").strip()
@@ -190,6 +223,7 @@ async def run_interactive_session():
             # Check if we got a follow-up task
             if history.is_done():
                 print("\n👋 Session completed. Goodbye!")
+                await speak_text("Session completed. Goodbye!")
                 break
             
             # Look for new tasks in the history
