@@ -1,7 +1,7 @@
 import asyncio
 import sys
 from dotenv import load_dotenv
-from browser_use import Agent, Tools, ChatOpenAI, Browser
+from browser_use import Agent, Tools, ChatOpenAI, Browser, ChatGoogle
 from browser_use.agent.views import ActionResult
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -323,7 +323,7 @@ def get_system_message(language: str = 'en') -> str:
 async def create_clarifying_agent(task: str, language: str = None):
     """Create an agent that asks clarifying questions and follow-ups"""
     
-    llm = ChatOpenAI(model="gpt-4.1-mini")
+    llm = ChatOpenAI(model='gpt-4.1-mini')
     
     browser = Browser(
         window_size={'width': 1920, 'height': 1080},
