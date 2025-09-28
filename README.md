@@ -263,8 +263,8 @@ Browser4All uses **voice-first interaction** with **visual feedback**:
 ##  Quick Start Examples
 
 ```bash
-# Start the agent (launches browser + hovering UI)
-python main.py
+# Open the launcher:
+python launcher.py
 ```
 
 **Example interactions** (all displayed in real-time UI):
