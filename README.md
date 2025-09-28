@@ -236,7 +236,7 @@ The UI automatically:
 - **Manages memory** by limiting stored messages
 - **Shuts down** cleanly when the agent exits
 
-## 🎯 How It Works
+## How It Works
 
 Browser4All uses **voice-first interaction** with **visual feedback**:
 
@@ -246,7 +246,7 @@ Browser4All uses **voice-first interaction** with **visual feedback**:
 4. **Agent asks**:  "I found cat videos. What would you like me to do next?" (question highlighted in blue)
 5. **You respond**: Voice or text - "Play the first video" (response logged in purple)
 
-### 🎤 Voice Features
+### Voice Features
 - **Automatic microphone calibration** for optimal recording
 - **Smart fallback**: Switches to text if voice fails
 - **Flexible input**: Say "use text input" to switch modes anytime
