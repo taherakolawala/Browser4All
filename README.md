@@ -1,6 +1,5 @@
 # Browser4All 🤖🔊
-
-An intelligent browser automation agent with natural speech interaction that asks clarifying questions instead of making assumptions. Features voice-first communication, a transparent hovering UI that displays all agent activity, and customizable browser settings.
+A multi-lingual hands-free speech-to-action AI browser agent. Made to truly expand internet accessbility to all people.
 
 ## 🚀 Setup & Installation
 
