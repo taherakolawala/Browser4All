@@ -77,10 +77,10 @@ This will help you:
 - Test audio recording quality
 - Automatically configure speech settings
 
-### 6. Run Browser4All
+### 6. Run Browser4All Launcher. Select language and launch the agent.
 
 ```bash
-python main.py
+python launcher.py
 ```
 
 The agent will:
