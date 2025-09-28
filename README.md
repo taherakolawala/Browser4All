@@ -1,7 +1,7 @@
-# Browser4All 🤖🔊
+# Browser4All
 A multi-lingual hands-free speech-to-action AI browser agent. Made to truly expand internet accessbility to all people.
 
-## 🚀 Setup & Installation
+## Setup & Installation
 
 ### 1. Prerequisites
 - **Python ≥ 3.11** (Python 3.12 recommended)
@@ -84,11 +84,11 @@ python main.py
 ```
 
 The agent will:
-- 🎨 **Launch the hovering UI** in the top-right corner of your screen
-- 🔊 **Greet you with speech** and wait for your voice or text input
-- 📺 **Display all activity** in the transparent interface above your browser
+-  **Launch the hovering UI** in the top-right corner of your screen
+-  **Greet you with speech** and wait for your voice or text input
+-  **Display all activity** in the transparent interface above your browser
 
-## ⚙️ Alternative Setup (without uv)
+##  Alternative Setup (without uv)
 
 If you prefer traditional pip:
 
@@ -114,7 +114,7 @@ pip install browser-use
 playwright install chromium --with-deps
 ```
 
-## 🎵 Speech & Voice Configuration
+##  Speech & Voice Configuration
 
 ### Voice Input Settings
 Voice input is **enabled by default**. The agent will:
@@ -159,7 +159,7 @@ To change recording length:
 phrase_timeout=8,  # Allow 8 seconds of silence before ending
 ```
 
-## 🖥️ Browser Configuration
+## Browser Configuration
 
 ### Window Size & Position
 Configure browser appearance in [`main.py`](main.py):
@@ -206,16 +206,16 @@ browser = Browser(
 )
 ```
 
-## 🖥️ Hovering UI Interface
+##  Hovering UI Interface
 
 Browser4All features a **transparent hovering interface** that displays all agent activity in real-time:
 
-- **🎨 Transparent overlay**: Hovers above the browser window with customizable opacity
-- **🔄 Real-time updates**: Shows all terminal output, questions, responses, and agent actions
-- **🎨 Color-coded messages**: Questions (blue), success (green), warnings (yellow), errors (red)
-- **📱 Draggable & resizable**: Click and drag to reposition, minimize/maximize controls
-- **⏰ Timestamped logs**: Each message includes timestamp for tracking
-- **🎯 Always on top**: Stays visible above the browser for continuous monitoring
+- **Transparent overlay**: Hovers above the browser window with customizable opacity
+- **Real-time updates**: Shows all terminal output, questions, responses, and agent actions
+- ** Color-coded messages**: Questions (blue), success (green), warnings (yellow), errors (red)
+- **Draggable & resizable**: Click and drag to reposition, minimize/maximize controls
+- **Timestamped logs**: Each message includes timestamp for tracking
+- **Always on top**: Stays visible above the browser for continuous monitoring
 
 ### UI Configuration
 Customize the hovering interface in [`main.py`](main.py):
@@ -240,10 +240,10 @@ The UI automatically:
 
 Browser4All uses **voice-first interaction** with **visual feedback**:
 
-1. **Agent greets you**: 🔊 "Hello! What would you like me to help you with?" (appears in hovering UI)
+1. **Agent greets you**:  "Hello! What would you like me to help you with?" (appears in hovering UI)
 2. **You speak**: "Go to YouTube and search for cat videos" (logged in UI)
 3. **Agent acts**: Navigates to YouTube, searches (progress shown in UI)
-4. **Agent asks**: 🔊 "I found cat videos. What would you like me to do next?" (question highlighted in blue)
+4. **Agent asks**:  "I found cat videos. What would you like me to do next?" (question highlighted in blue)
 5. **You respond**: Voice or text - "Play the first video" (response logged in purple)
 
 ### 🎤 Voice Features
@@ -253,14 +253,14 @@ Browser4All uses **voice-first interaction** with **visual feedback**:
 - **Debug mode**: Hear your recorded audio played back
 - **Visual feedback**: All voice interactions logged in hovering UI
 
-### 📺 UI Features
+###  UI Features
 - **Real-time monitoring**: See all agent activity as it happens
 - **Message categorization**: Color-coded by type (questions, responses, errors, etc.)
 - **Persistent display**: Stays visible above browser window
 - **Interactive controls**: Drag to move, minimize/close buttons
 - **Memory efficient**: Auto-manages message history
 
-## 📋 Quick Start Examples
+##  Quick Start Examples
 
 ```bash
 # Start the agent (launches browser + hovering UI)
@@ -347,7 +347,7 @@ pipwin install pyaudio
 - Free tier: 10,000 characters/month
 - Consider upgrading or disable speech: `enabled=False`
 
-## 🚀 One-Command Setup
+##  One-Command Setup
 
 **Windows (complete setup):**
 ```powershell
@@ -366,7 +366,7 @@ source ~/.bashrc && uv venv --python 3.12 && source .venv/bin/activate && uv pip
 # Add API keys to .env file, then: python main.py
 ```
 
-## 💰 Cost Management
+##  Cost Management
 
 **ElevenLabs (Speech):**
 - Free tier: 10,000 characters/month (~200 questions)
@@ -379,19 +379,19 @@ source ~/.bashrc && uv venv --python 3.12 && source .venv/bin/activate && uv pip
 
 **Total typical cost: $0-10/month** depending on usage.
 
-## 🆕 New Features
+##  New Features
 
 ### Hovering UI Interface
-- **📺 Real-time visual feedback** of all agent activity
-- **🎨 Transparent overlay** that hovers above your browser
-- **🎯 Color-coded messages** for easy tracking
-- **📱 Interactive controls** - drag, minimize, close
-- **⏰ Timestamped logs** for session tracking
+- ** Real-time visual feedback** of all agent activity
+- ** Transparent overlay** that hovers above your browser
+- ** Color-coded messages** for easy tracking
+- ** Interactive controls** - drag, minimize, close
+- ** Timestamped logs** for session tracking
 
 ### Enhanced Integration
 All terminal output automatically appears in both:
-- **🖥️ Terminal** - Traditional command line output
-- **📺 Hovering UI** - Visual overlay with timestamps and colors
+- ** Terminal** - Traditional command line output
+- ** Hovering UI** - Visual overlay with timestamps and colors
 
 ---
 
