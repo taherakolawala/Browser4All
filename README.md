@@ -7,8 +7,6 @@
          \/                          \/     \/           |__|        \/            
 ```
 
-# Browser4All
-
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![ShellHacks](https://img.shields.io/badge/ShellHacks_2024-Semifinalist-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
