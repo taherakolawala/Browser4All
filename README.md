@@ -11,7 +11,7 @@
 ![ShellHacks](https://img.shields.io/badge/ShellHacks_2024-Semifinalist-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**ShellHacks 2024 Semifinalist**
+**ShellHacks 2025 Semifinalist**
 
 A hands-free, multi-lingual AI browser agent built for accessibility. Speak any command in your language and watch the browser act. Designed for users who can't easily use a keyboard or mouse.
 
