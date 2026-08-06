@@ -7,6 +7,8 @@ Shows all available microphones and identifies which one is being used for recor
 import speech_recognition as sr
 import pyaudio
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def list_all_microphones():
     """List all available audio input devices"""

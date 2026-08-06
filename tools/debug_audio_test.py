@@ -5,6 +5,8 @@ Quick debug audio test - just tests the audio recording and playback
 
 import sys
 import os
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def test_debug_audio():
     """Test debug audio recording and playback"""

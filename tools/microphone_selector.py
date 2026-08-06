@@ -7,6 +7,10 @@ Allows you to choose which microphone to use for Browser4All voice input.
 import speech_recognition as sr
 import pyaudio
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+_ROOT = Path(__file__).parent.parent
 
 def list_microphones():
     """List available microphones with their indices"""
@@ -171,18 +175,18 @@ def update_speech_handler_automatically(device_index):
     
     try:
         # Read current speech_handler.py
-        with open('speech_handler.py', 'r') as f:
+        with open(_ROOT / 'speech_handler.py', 'r') as f:
             content = f.read()
-        
+
         # Replace microphone initialization
         old_line = "self.microphone = sr.Microphone()"
         new_line = f"self.microphone = sr.Microphone(device_index={device_index})"
-        
+
         if old_line in content:
             updated_content = content.replace(old_line, new_line)
-            
+
             # Write back to file
-            with open('speech_handler.py', 'w') as f:
+            with open(_ROOT / 'speech_handler.py', 'w') as f:
                 f.write(updated_content)
             
             print(f"✅ Updated speech_handler.py to use microphone {device_index}")

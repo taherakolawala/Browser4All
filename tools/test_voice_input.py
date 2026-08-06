@@ -6,6 +6,8 @@ Run this to verify that speech recognition is working before using the main agen
 
 import sys
 import os
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def test_speech_recognition():
     """Test speech recognition setup"""

@@ -99,18 +99,9 @@ class Browser4AllLauncher:
             selected_lang_name = self.language_var.get()
             selected_lang_code = self.languages[selected_lang_name]
             
-            # Define the target directory
-            target_dir = r"C:\Users\taher\browser4all\Browser4All"
-            
-            # Check if directory exists
-            if not os.path.exists(target_dir):
-                self.status_label.config(
-                    text="❌ Browser4All directory not found!", 
-                    foreground="red"
-                )
-                self.run_button.config(state="normal")
-                return
-            
+            # Target directory is wherever launcher.py lives
+            target_dir = str(Path(__file__).parent)
+
             # Check if main.py exists
             main_py_path = os.path.join(target_dir, "main.py")
             if not os.path.exists(main_py_path):
