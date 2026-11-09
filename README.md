@@ -8,7 +8,7 @@
 ```
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
-![ShellHacks](https://img.shields.io/badge/ShellHacks_2024-Semifinalist-orange)
+![ShellHacks](https://img.shields.io/badge/ShellHacks_2025-Semifinalist-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 **ShellHacks 2025 Semifinalist**
